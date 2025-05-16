@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Market Balance Sheet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f4f4f4;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #218838;
+        }
+        
+        .entry-list {
+            margin-top: 20px;
+        }
+        
+        .entry {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .total {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Stock Market Balance Sheet by Parth Singh Bisen</h1>
+        <label for="amount">Enter Today's Income (₹):</label>
+        <input type="number" id="amount" placeholder="e.g., 500">
+        <button onclick="addEntry()">Add Entry</button>
+
+        <div class="entry-list" id="entryList"></div>
+        <div class="total" id="totalAmount">Total Amount: ₹0</div>
+    </div>
+
+    <script>
+        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+
+        function updateUI() {
+            const entryList = document.getElementById('entryList');
+            const totalAmount = document.getElementById('totalAmount');
+            entryList.innerHTML = '';
+            let total = 0;
+
+            entries.forEach((entry, index) => {
+                const div = document.createElement('div');
+                div.className = 'entry';
+                div.textContent = `Day ${index + 1}: ₹${entry}`;
+                entryList.appendChild(div);
+                total += parseFloat(entry);
+            });
+
+            totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
+        }
+
+        function addEntry() {
+            const amountInput = document.getElementById('amount');
+            const amount = parseFloat(amountInput.value);
+
+            if (!isNaN(amount)) {
+                entries.push(amount);
+                localStorage.setItem('entries', JSON.stringify(entries));
+                amountInput.value = '';
+                updateUI();
+            } else {
+                alert("Please enter a valid number.");
+            }
+        }
+
+        updateUI(); // Load data on page load
+    </script>
+</body>
+
+</html>
