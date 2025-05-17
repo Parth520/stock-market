@@ -8,7 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       padding: 40px 20px;
-      background: #F8F9FA;
+      background-image: linear-gradient(#F8F9FA,#4ED7F1);
       color: #28A745;
     }
 
@@ -21,10 +21,10 @@
     .container {
       max-width: 600px;
       margin: auto;
-      background: #0A2342;
+      background-image: linear-gradient(#0A2342,#5409DA);
       padding: 30px 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
     }
 
     label {
@@ -97,6 +97,30 @@
         font-size: 1.4rem;
       }
     }
+    .btn-clear {
+  background-color: #dc3545;
+  color: white;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-clear:hover {
+  background-color: #c82333;
+  transform: scale(1.03);
+}
+
+.btn-delete-last {
+  background-color: #ffc107;
+  color: black;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-delete-last:hover {
+  background-color: #e0a800;
+  transform: scale(1.03);
+}
+
   </style>
 </head>
 
@@ -106,6 +130,13 @@
     <label for="amount">Enter Today's Income (₹):</label>
     <input type="number" id="amount" placeholder="e.g., 500">
     <button onclick="addEntry()">Add Entry</button>
+
+    <button onclick="deleteLastEntry()" style="background-color: #ffc107; color: black; margin-top: 10px;" class="btn-delete-last">Delete Last Entry</button>
+
+
+    <button onclick="clearEntries()" style="background-color: #dc3545; color: white; margin-top: 10px;" class="btn-clear">Clear All Entries</button>
+
+
 
     <div class="entry-list" id="entryList"></div>
     <div class="total" id="totalAmount">Total Amount: ₹0</div>
@@ -158,6 +189,31 @@
         alert("Please enter a valid number.");
       }
     }
+    function clearEntries() {
+        if (confirm("Are you sure you want to delete all entries?")) {
+        entries = []; // Clear the array in memory
+        localStorage.removeItem('entries'); // Clear storage
+        updateUI(); // Refresh the screen
+        }
+    }
+    function deleteLastEntry() {
+        if (entries.length === 0) {
+        alert("No entries to delete.");
+        return;
+    }
+
+    const last = entries[entries.length - 1];
+    const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
+    if (confirmDelete) {
+        entries.pop(); // remove last entry
+        localStorage.setItem('entries', JSON.stringify(entries));
+        updateUI();
+    }
+}
+
+
+
+    
 
     updateUI(); // Load on page load
   </script>
