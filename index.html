@@ -8,18 +8,19 @@
         body {
             font-family: Arial, sans-serif;
             padding: 40px;
-            background: #f4f4f4;
-            color: #333;
+            background: #F8F9FA;
+            color: 	#28A745;
         }
         
         h1 {
             text-align: center;
+            color:	#FFC107;
         }
         
         .container {
             max-width: 600px;
             margin: auto;
-            background: white;
+            background: 		#0A2342;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -30,6 +31,8 @@
             padding: 10px;
             margin-top: 10px;
             font-size: 1rem;
+            border-radius:20px;
+            border:0;
         }
         
         button {
@@ -61,6 +64,12 @@
             margin-top: 20px;
             font-weight: bold;
         }
+        label{
+            color:	#FFC107;
+        }
+        .total{
+            color:	#28A745;
+        }
     </style>
 </head>
 
@@ -75,42 +84,58 @@
         <div class="total" id="totalAmount">Total Amount: ₹0</div>
     </div>
 
-    <script>
-        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    <script> 
+    let entries = JSON.parse(localStorage.getItem('entries')) || [];
 
-        function updateUI() {
-            const entryList = document.getElementById('entryList');
-            const totalAmount = document.getElementById('totalAmount');
-            entryList.innerHTML = '';
-            let total = 0;
+    function updateUI() {
+        const entryList = document.getElementById('entryList');
+        const totalAmount = document.getElementById('totalAmount');
+        entryList.innerHTML = '';
+        let total = 0;
 
-            entries.forEach((entry, index) => {
+        entries.forEach((entry) => {
+            if (entry && entry.amount && entry.date) {
                 const div = document.createElement('div');
                 div.className = 'entry';
-                div.textContent = `Day ${index + 1}: ₹${entry}`;
+                div.textContent = `${entry.date}: ₹${entry.amount}`;
                 entryList.appendChild(div);
-                total += parseFloat(entry);
+                total += parseFloat(entry.amount);
+            }
+        });
+
+        totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
+    }
+
+    function addEntry() {
+        const amountInput = document.getElementById('amount');
+        const amount = parseFloat(amountInput.value);
+
+        if (!isNaN(amount)) {
+            const today = new Date();
+            const formattedDate = today.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
             });
 
-            totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
+            const newEntry = {
+                amount: amount.toFixed(2),
+                date: formattedDate
+            };
+
+            entries.push(newEntry);
+            localStorage.setItem('entries', JSON.stringify(entries));
+            amountInput.value = '';
+            updateUI();
+        } else {
+            alert("Please enter a valid number.");
         }
+    }
 
-        function addEntry() {
-            const amountInput = document.getElementById('amount');
-            const amount = parseFloat(amountInput.value);
+    updateUI(); // Load data on page load
+</script>
 
-            if (!isNaN(amount)) {
-                entries.push(amount);
-                localStorage.setItem('entries', JSON.stringify(entries));
-                amountInput.value = '';
-                updateUI();
-            } else {
-                alert("Please enter a valid number.");
-            }
-        }
 
-        updateUI(); // Load data on page load
-    </script>
 </body>
 
 </html>
