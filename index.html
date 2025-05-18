@@ -132,6 +132,36 @@
           color:white;
           padding:20px;
         }
+        th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      border-bottom: 1px solid #ccc;
+    }
+
+    canvas {
+      margin-top: 20px;
+      background-color: white;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      input[type="number"],
+      button {
+        font-size: 1.1rem;
+        padding: 14px;
+      }
+
+      .total {
+        font-size: 1.4rem;
+      }
+    }
     </style>
 </head>
 
@@ -167,114 +197,136 @@
     </div>
     <br>
     <hr>
+    <h2>Monthly Income Chart</h2>
+    <canvas id="incomeChart" height="200"></canvas>
+    <br>
+    <hr>
     <footer>
       <p class="footer">Made by Parth Singh Bisen</p>
     </footer>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    let incomeChart;
 
-        function updateUI() {
-            const entryList = document.getElementById('entryList');
-            const totalAmount = document.getElementById('totalAmount');
-            const summaryTable = document.getElementById('monthlySummary').querySelector('tbody');
+    function updateUI() {
+      const entryList = document.getElementById('entryList');
+      const totalAmount = document.getElementById('totalAmount');
+      const summaryTable = document.getElementById('monthlySummary');
+      const chartCanvas = document.getElementById('incomeChart');
 
-            entryList.innerHTML = '';
-            summaryTable.innerHTML = '';
+      entryList.innerHTML = '';
+      summaryTable.innerHTML = '';
+      let total = 0;
+      const monthlyTotals = {};
 
-            let total = 0;
-            const monthlyTotals = {};
+      entries.forEach((entry) => {
+        if (entry && entry.amount && entry.date) {
+          const div = document.createElement('div');
+          div.className = 'entry';
+          div.textContent = `${entry.date}: ₹${entry.amount}`;
+          entryList.appendChild(div);
 
-            entries.forEach((entry) => {
-                if (entry && entry.amount && entry.date) {
-                    // Display daily entry
-                    const div = document.createElement('div');
-                    div.className = 'entry';
-                    div.textContent = `${entry.date}: ₹${entry.amount}`;
-                    entryList.appendChild(div);
+          total += parseFloat(entry.amount);
 
-                    total += parseFloat(entry.amount);
-
-                    // Group by month (e.g., "May 2025")
-                    const [day, month, year] = entry.date.split(' ');
-                    const monthYear = `${month} ${year}`;
-                    if (!monthlyTotals[monthYear]) {
-                        monthlyTotals[monthYear] = 0;
-                    }
-                    monthlyTotals[monthYear] += parseFloat(entry.amount);
-                }
-            });
-
-            totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
-
-            // Populate summary table
-            for (const month in monthlyTotals) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-      <td style="padding: 8px;">${month}</td>
-      <td style="padding: 8px; text-align: right;">₹${monthlyTotals[month].toFixed(2)}</td>
-    `;
-                summaryTable.appendChild(row);
-            }
+          const [day, month, year] = entry.date.split(' ');
+          const key = `${month} ${year}`;
+          if (!monthlyTotals[key]) monthlyTotals[key] = 0;
+          monthlyTotals[key] += parseFloat(entry.amount);
         }
+      });
 
+      totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
 
-        function addEntry() {
-            const amountInput = document.getElementById('amount');
-            const amount = parseFloat(amountInput.value);
+      for (const month in monthlyTotals) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${month}</td>
+          <td style="text-align: right;">₹${monthlyTotals[month].toFixed(2)}</td>
+        `;
+        summaryTable.appendChild(row);
+      }
 
-            if (!isNaN(amount)) {
-                const today = new Date();
-                const formattedDate = today.toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
+      // Chart data
+      const labels = Object.keys(monthlyTotals);
+      const data = Object.values(monthlyTotals);
 
-                const newEntry = {
-                    amount: amount.toFixed(2),
-                    date: formattedDate
-                };
+      if (incomeChart) incomeChart.destroy();
 
-                entries.push(newEntry);
-                localStorage.setItem('entries', JSON.stringify(entries));
-                amountInput.value = '';
-                updateUI();
-            } else {
-                alert("Please enter a valid number.");
+      incomeChart = new Chart(chartCanvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Monthly Income (₹)',
+            data: data,
+            backgroundColor: '#FFC107',
+            borderColor: '#FF9800',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
             }
+          }
         }
+      });
+    }
 
-        function clearEntries() {
-            if (confirm("Are you sure you want to delete all entries?")) {
-                entries = []; // Clear the array in memory
-                localStorage.removeItem('entries'); // Clear storage
-                updateUI(); // Refresh the screen
-            }
-        }
+    function addEntry() {
+      const amountInput = document.getElementById('amount');
+      const amount = parseFloat(amountInput.value);
 
-        function deleteLastEntry() {
-            if (entries.length === 0) {
-                alert("No entries to delete.");
-                return;
-            }
+      if (!isNaN(amount)) {
+        const today = new Date();
+        const formattedDate = today.toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
 
-            const last = entries[entries.length - 1];
-            const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
-            if (confirmDelete) {
-                entries.pop(); // remove last entry
-                localStorage.setItem('entries', JSON.stringify(entries));
-                updateUI();
-            }
-        }
+        const newEntry = {
+          amount: amount.toFixed(2),
+          date: formattedDate
+        };
 
+        entries.push(newEntry);
+        localStorage.setItem('entries', JSON.stringify(entries));
+        amountInput.value = '';
+        updateUI();
+      } else {
+        alert("Please enter a valid number.");
+      }
+    }
 
+    function clearEntries() {
+      if (confirm("Are you sure you want to delete all entries?")) {
+        entries = [];
+        localStorage.removeItem('entries');
+        updateUI();
+      }
+    }
 
+    function deleteLastEntry() {
+      if (entries.length === 0) {
+        alert("No entries to delete.");
+        return;
+      }
 
+      const last = entries[entries.length - 1];
+      const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
+      if (confirmDelete) {
+        entries.pop();
+        localStorage.setItem('entries', JSON.stringify(entries));
+        updateUI();
+      }
+    }
 
-        updateUI(); // Load on page load
-    </script>
+    updateUI();
+  </script>
 </body>
 
 </html>
