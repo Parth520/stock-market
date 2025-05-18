@@ -1,222 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Stock Market Balance Sheet</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Makes it responsive -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      height:400px;
-      padding:40px;
-      background: #4ED7F1;
-      color: #28A745;
-    }
+    <meta charset="UTF-8">
+    <title>Stock Market Balance Sheet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Makes it responsive -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 400px;
+            padding: 40px;
+            background: #4ED7F1;
+            color: #28A745;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #FFC107;
+            font-size: 1.5rem;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-image: linear-gradient(#0A2342, #5409DA);
+            padding: 30px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
+        }
+        
+        label {
+            display: block;
+            color: #FFC107;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 20px;
+            border: 0;
+            box-sizing: border-box;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 1.1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        button:hover {
+            background-color: #218838;
+        }
+        
+        .entry-list {
+            margin-top: 20px;
+        }
+        
+        .entry {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+        
+        .total {
+            font-size: 1.3rem;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #28A745;
+        }
+        /* 🌐 Responsive Styling */
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            input[type="number"],
+            button {
+                font-size: 1.1rem;
+                padding: 14px;
+            }
+            .entry {
+                font-size: 1.1rem;
+            }
+            .total {
+                font-size: 1.4rem;
+            }
+        }
+        
+        .btn-clear {
+            background-color: #dc3545;
+            color: white;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .btn-clear:hover {
+            background-color: #c82333;
+            transform: scale(1.03);
+        }
+        
+        .btn-delete-last {
+            background-color: #ffc107;
+            color: black;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .btn-delete-last:hover {
+            background-color: #e0a800;
+            transform: scale(1.03);
+        }
+        .table{
+          background-image: radial-gradient(#0A2342, #5409DA);
+          padding:20px;
+          border-radius: 20px;
+          box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
 
-    h1 {
-      text-align: center;
-      color: #FFC107;
-      font-size: 1.5rem;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background-image: linear-gradient(#0A2342,#5409DA);
-      padding: 30px 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
-    }
-
-    label {
-      display: block;
-      color: #FFC107;
-      margin-bottom: 8px;
-      font-size: 1rem;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 1.1rem;
-      border-radius: 20px;
-      border: 0;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 12px;
-      font-size: 1.1rem;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    .entry-list {
-      margin-top: 20px;
-    }
-
-    .entry {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      color: #ffffff;
-      font-size: 1rem;
-    }
-
-    .total {
-      font-size: 1.3rem;
-      margin-top: 20px;
-      font-weight: bold;
-      color: #28A745;
-    }
-
-    /* 🌐 Responsive Styling */
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      input[type="number"],
-      button {
-        font-size: 1.1rem;
-        padding: 14px;
-      }
-
-      .entry {
-        font-size: 1.1rem;
-      }
-
-      .total {
-        font-size: 1.4rem;
-      }
-    }
-    .btn-clear {
-  background-color: #dc3545;
-  color: white;
-  margin-top: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-clear:hover {
-  background-color: #c82333;
-  transform: scale(1.03);
-}
-
-.btn-delete-last {
-  background-color: #ffc107;
-  color: black;
-  margin-top: 10px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-delete-last:hover {
-  background-color: #e0a800;
-  transform: scale(1.03);
-}
-
-  </style>
+        }
+        .footer{
+          color:white;
+          padding:20px;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Stock Market Balance Sheet by Parth Singh Bisen</h1>
-    <label for="amount">Enter Today's Income (₹):</label>
-    <input type="number" id="amount" placeholder="e.g., 500">
-    <button onclick="addEntry()">Add Entry</button>
+    <div class="container">
+        <h1>Stock Market Balance Sheet </h1>
+        <label for="amount">Enter Today's Income (₹):</label>
+        <input type="number" id="amount" placeholder="e.g., 500">
+        <button onclick="addEntry()">Add Entry</button>
 
-    <button onclick="deleteLastEntry()" style="background-color: #ffc107; color: black; margin-top: 10px;" class="btn-delete-last">Delete Last Entry</button>
-
-
-    <button onclick="clearEntries()" style="background-color: #dc3545; color: white; margin-top: 10px;" class="btn-clear">Clear All Entries</button>
+        <button onclick="deleteLastEntry()" style="background-color: #ffc107; color: black; margin-top: 10px;" class="btn-delete-last">Delete Last Entry</button>
 
 
+        <button onclick="clearEntries()" style="background-color: #dc3545; color: white; margin-top: 10px;" class="btn-clear">Clear All Entries</button>
 
-    <div class="entry-list" id="entryList"></div>
-    <div class="total" id="totalAmount">Total Amount: ₹0</div>
-  </div>
 
-  <script>
-    let entries = JSON.parse(localStorage.getItem('entries')) || [];
 
-    function updateUI() {
-      const entryList = document.getElementById('entryList');
-      const totalAmount = document.getElementById('totalAmount');
-      entryList.innerHTML = '';
-      let total = 0;
+        <div class="entry-list" id="entryList"></div>
+        <div class="total" id="totalAmount">Total Amount: ₹0</div>
+    </div>
+    <br>
+    <div class="table">
+        <h2 style="color: #FFC107; margin-top: 30px;">Monthly Summary</h2>
+        <table id="monthlySummary" style="width: 100%; color: white; margin-top: 10px; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid #ccc;">
+                    <th style="text-align: left; padding: 8px;">Month</th>
+                    <th style="text-align: right; padding: 8px;">Total (₹)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <br>
+    <hr>
+    <footer>
+      <p class="footer">Made by Parth Singh Bisen</p>
+    </footer>
 
-      entries.forEach((entry) => {
-        if (entry && entry.amount && entry.date) {
-          const div = document.createElement('div');
-          div.className = 'entry';
-          div.textContent = `${entry.date}: ₹${entry.amount}`;
-          entryList.appendChild(div);
-          total += parseFloat(entry.amount);
+
+    <script>
+        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+
+        function updateUI() {
+            const entryList = document.getElementById('entryList');
+            const totalAmount = document.getElementById('totalAmount');
+            const summaryTable = document.getElementById('monthlySummary').querySelector('tbody');
+
+            entryList.innerHTML = '';
+            summaryTable.innerHTML = '';
+
+            let total = 0;
+            const monthlyTotals = {};
+
+            entries.forEach((entry) => {
+                if (entry && entry.amount && entry.date) {
+                    // Display daily entry
+                    const div = document.createElement('div');
+                    div.className = 'entry';
+                    div.textContent = `${entry.date}: ₹${entry.amount}`;
+                    entryList.appendChild(div);
+
+                    total += parseFloat(entry.amount);
+
+                    // Group by month (e.g., "May 2025")
+                    const [day, month, year] = entry.date.split(' ');
+                    const monthYear = `${month} ${year}`;
+                    if (!monthlyTotals[monthYear]) {
+                        monthlyTotals[monthYear] = 0;
+                    }
+                    monthlyTotals[monthYear] += parseFloat(entry.amount);
+                }
+            });
+
+            totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
+
+            // Populate summary table
+            for (const month in monthlyTotals) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+      <td style="padding: 8px;">${month}</td>
+      <td style="padding: 8px; text-align: right;">₹${monthlyTotals[month].toFixed(2)}</td>
+    `;
+                summaryTable.appendChild(row);
+            }
         }
-      });
 
-      totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
-    }
 
-    function addEntry() {
-      const amountInput = document.getElementById('amount');
-      const amount = parseFloat(amountInput.value);
+        function addEntry() {
+            const amountInput = document.getElementById('amount');
+            const amount = parseFloat(amountInput.value);
 
-      if (!isNaN(amount)) {
-        const today = new Date();
-        const formattedDate = today.toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        });
+            if (!isNaN(amount)) {
+                const today = new Date();
+                const formattedDate = today.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
 
-        const newEntry = {
-          amount: amount.toFixed(2),
-          date: formattedDate
-        };
+                const newEntry = {
+                    amount: amount.toFixed(2),
+                    date: formattedDate
+                };
 
-        entries.push(newEntry);
-        localStorage.setItem('entries', JSON.stringify(entries));
-        amountInput.value = '';
-        updateUI();
-      } else {
-        alert("Please enter a valid number.");
-      }
-    }
-    function clearEntries() {
-        if (confirm("Are you sure you want to delete all entries?")) {
-        entries = []; // Clear the array in memory
-        localStorage.removeItem('entries'); // Clear storage
-        updateUI(); // Refresh the screen
+                entries.push(newEntry);
+                localStorage.setItem('entries', JSON.stringify(entries));
+                amountInput.value = '';
+                updateUI();
+            } else {
+                alert("Please enter a valid number.");
+            }
         }
-    }
-    function deleteLastEntry() {
-        if (entries.length === 0) {
-        alert("No entries to delete.");
-        return;
-    }
 
-    const last = entries[entries.length - 1];
-    const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
-    if (confirmDelete) {
-        entries.pop(); // remove last entry
-        localStorage.setItem('entries', JSON.stringify(entries));
-        updateUI();
-    }
-}
+        function clearEntries() {
+            if (confirm("Are you sure you want to delete all entries?")) {
+                entries = []; // Clear the array in memory
+                localStorage.removeItem('entries'); // Clear storage
+                updateUI(); // Refresh the screen
+            }
+        }
+
+        function deleteLastEntry() {
+            if (entries.length === 0) {
+                alert("No entries to delete.");
+                return;
+            }
+
+            const last = entries[entries.length - 1];
+            const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
+            if (confirmDelete) {
+                entries.pop(); // remove last entry
+                localStorage.setItem('entries', JSON.stringify(entries));
+                updateUI();
+            }
+        }
 
 
 
-    
 
-    updateUI(); // Load on page load
-  </script>
+
+        updateUI(); // Load on page load
+    </script>
 </body>
+
 </html>
