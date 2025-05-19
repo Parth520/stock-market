@@ -121,55 +121,68 @@
             background-color: #e0a800;
             transform: scale(1.03);
         }
-        .table{
-          background-image: radial-gradient(#0A2342, #5409DA);
-          padding:20px;
-          border-radius: 20px;
-          box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
-
+        
+        .table {
+            background-image: radial-gradient(#0A2342, #5409DA);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(20, 20, 20, 200);
         }
-        .footer{
-          color:white;
-          padding:20px;
+        
+        .footer {
+            color: white;
+            padding: 20px;
         }
-        th, td {
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      border-bottom: 1px solid #ccc;
-    }
-
-    canvas {
-      margin-top: 20px;
-      background-color: white;
-      border-radius: 10px;
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.2rem;
-      }
-
-      input[type="number"],
-      button {
-        font-size: 1.1rem;
-        padding: 14px;
-      }
-
-      .total {
-        font-size: 1.4rem;
-      }
-    }
+        
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            border-bottom: 1px solid #ccc;
+        }
+        
+        canvas {
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            input[type="number"],
+            button {
+                font-size: 1.1rem;
+                padding: 14px;
+            }
+            .total {
+                font-size: 1.4rem;
+            }
+        }
+        #date{
+            padding: 10px;
+            height: 20px;
+            border-radius: 10%;
+            border: none;
+            
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Stock Market Balance Sheet </h1>
-        <label for="amount">Enter Today's Income (₹):</label>
+        <label for="amount">Enter Income (₹):</label>
         <input type="number" id="amount" placeholder="e.g., 500">
+        <br>
+        <br>
+        <label for="date">Select Date:</label>
+        <input type="date" id="date">
+
         <button onclick="addEntry()">Add Entry</button>
 
         <button onclick="deleteLastEntry()" style="background-color: #ffc107; color: black; margin-top: 10px;" class="btn-delete-last">Delete Last Entry</button>
@@ -181,6 +194,8 @@
 
         <div class="entry-list" id="entryList"></div>
         <div class="total" id="totalAmount">Total Amount: ₹0</div>
+
+
     </div>
     <br>
     <div class="table">
@@ -202,131 +217,133 @@
     <br>
     <hr>
     <footer>
-      <p class="footer">Made by Parth Singh Bisen</p>
+        <p class="footer">Made by Parth Singh Bisen</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    let entries = JSON.parse(localStorage.getItem('entries')) || [];
-    let incomeChart;
+        let entries = JSON.parse(localStorage.getItem('entries')) || [];
+        let incomeChart;
 
-    function updateUI() {
-      const entryList = document.getElementById('entryList');
-      const totalAmount = document.getElementById('totalAmount');
-      const summaryTable = document.getElementById('monthlySummary');
-      const chartCanvas = document.getElementById('incomeChart');
+        function updateUI() {
+            const entryList = document.getElementById('entryList');
+            const totalAmount = document.getElementById('totalAmount');
+            const summaryTable = document.getElementById('monthlySummary');
+            const chartCanvas = document.getElementById('incomeChart');
 
-      entryList.innerHTML = '';
-      summaryTable.innerHTML = '';
-      let total = 0;
-      const monthlyTotals = {};
+            entryList.innerHTML = '';
+            summaryTable.innerHTML = '';
+            let total = 0;
+            const monthlyTotals = {};
 
-      entries.forEach((entry) => {
-        if (entry && entry.amount && entry.date) {
-          const div = document.createElement('div');
-          div.className = 'entry';
-          div.textContent = `${entry.date}: ₹${entry.amount}`;
-          entryList.appendChild(div);
+            entries.forEach((entry) => {
+                if (entry && entry.amount && entry.date) {
+                    const div = document.createElement('div');
+                    div.className = 'entry';
+                    div.textContent = `${entry.date}: ₹${entry.amount}`;
+                    entryList.appendChild(div);
 
-          total += parseFloat(entry.amount);
+                    total += parseFloat(entry.amount);
 
-          const [day, month, year] = entry.date.split(' ');
-          const key = `${month} ${year}`;
-          if (!monthlyTotals[key]) monthlyTotals[key] = 0;
-          monthlyTotals[key] += parseFloat(entry.amount);
-        }
-      });
+                    const [day, month, year] = entry.date.split(' ');
+                    const key = `${month} ${year}`;
+                    if (!monthlyTotals[key]) monthlyTotals[key] = 0;
+                    monthlyTotals[key] += parseFloat(entry.amount);
+                }
+            });
 
-      totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
+            totalAmount.textContent = `Total Amount: ₹${total.toFixed(2)}`;
 
-      for (const month in monthlyTotals) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
+            for (const month in monthlyTotals) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
           <td>${month}</td>
           <td style="text-align: right;">₹${monthlyTotals[month].toFixed(2)}</td>
         `;
-        summaryTable.appendChild(row);
-      }
-
-      // Chart data
-      const labels = Object.keys(monthlyTotals);
-      const data = Object.values(monthlyTotals);
-
-      if (incomeChart) incomeChart.destroy();
-
-      incomeChart = new Chart(chartCanvas, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Monthly Income (₹)',
-            data: data,
-            backgroundColor: '#FFC107',
-            borderColor: '#FF9800',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: true
+                summaryTable.appendChild(row);
             }
-          }
+
+            // Chart data
+            const labels = Object.keys(monthlyTotals);
+            const data = Object.values(monthlyTotals);
+
+            if (incomeChart) incomeChart.destroy();
+
+            incomeChart = new Chart(chartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Monthly Income (₹)',
+                        data: data,
+                        backgroundColor: '#FFC107',
+                        borderColor: '#FF9800',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
-      });
-    }
 
-    function addEntry() {
-      const amountInput = document.getElementById('amount');
-      const amount = parseFloat(amountInput.value);
+        function addEntry() {
+            const amountInput = document.getElementById('amount');
+            const dateInput = document.getElementById('date');
 
-      if (!isNaN(amount)) {
-        const today = new Date();
-        const formattedDate = today.toLocaleDateString('en-IN', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
-        });
+            const amount = parseFloat(amountInput.value);
+            const dateValue = dateInput.value;
 
-        const newEntry = {
-          amount: amount.toFixed(2),
-          date: formattedDate
-        };
+            if (!isNaN(amount)) {
+                const formattedDate = dateValue ?
+                    new Date(dateValue).toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    }) :
+                    new Date().toLocaleDateString('en-IN', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                    });
 
-        entries.push(newEntry);
-        localStorage.setItem('entries', JSON.stringify(entries));
-        amountInput.value = '';
+                const newEntry = {
+                    amount: amount.toFixed(2),
+                    date: formattedDate
+                };
+
+                entries.push(newEntry);
+                localStorage.setItem('entries', JSON.stringify(entries));
+                amountInput.value = '';
+                dateInput.value = '';
+                updateUI();
+            } else {
+                alert("Please enter a valid number.");
+            }
+        }
+
+
+        function deleteLastEntry() {
+            if (entries.length === 0) {
+                alert("No entries to delete.");
+                return;
+            }
+
+            const last = entries[entries.length - 1];
+            const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
+            if (confirmDelete) {
+                entries.pop();
+                localStorage.setItem('entries', JSON.stringify(entries));
+                updateUI();
+            }
+        }
+
         updateUI();
-      } else {
-        alert("Please enter a valid number.");
-      }
-    }
-
-    function clearEntries() {
-      if (confirm("Are you sure you want to delete all entries?")) {
-        entries = [];
-        localStorage.removeItem('entries');
-        updateUI();
-      }
-    }
-
-    function deleteLastEntry() {
-      if (entries.length === 0) {
-        alert("No entries to delete.");
-        return;
-      }
-
-      const last = entries[entries.length - 1];
-      const confirmDelete = confirm(`Delete last entry?\n${last.date}: ₹${last.amount}`);
-      if (confirmDelete) {
-        entries.pop();
-        localStorage.setItem('entries', JSON.stringify(entries));
-        updateUI();
-      }
-    }
-
-    updateUI();
-  </script>
+    </script>
 </body>
 
 </html>
